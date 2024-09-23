@@ -25,6 +25,8 @@
 
       response.text().then((resText) => {
 
+      const contentType = response.headers.get('Content-Type');
+
       //create elements to put data in
       const content = document.querySelector('#content');
       const h1 = document.createElement('h1');

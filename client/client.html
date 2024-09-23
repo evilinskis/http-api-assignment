@@ -6,6 +6,66 @@
   
   <script>
 
+    const init = () => {
+      //get page elements
+      const requestButton = document.querySelector('#send');
+      const requestPage = document.querySelector('#page');
+      const requestType = document.querySelector('#type');
+
+      //get the current selection and send it when button is clicked
+      requestButton.onclick = function () {
+      const url = requestPage.value;
+      const type = requestType.value;
+      sendFetchRequest(url, type);
+      }
+    };
+
+    //get response back and process
+    const handleResponse = (response) => {
+
+      response.text().then((resText) => {
+
+      //create elements to put data in
+      const content = document.querySelector('#content');
+      const h1 = document.createElement('h1');
+      const p = document.createElement('p');
+
+      //put json/xml data on page
+      if(contentType === 'application/json') {
+
+        const parsedResponse = JSON.parse(resText);
+        h1.textContent = parsedResponse.id;
+        p.textContent = `Message: ${parsedResponse.message}`;
+
+      } else if (contentType === 'text/xml') {
+
+        const parsedResponse = new window.DOMParser().parseFromString(resText, 'text/xml');
+        h1.textContent = parsedResponse.querySelector('id').textContent;
+        p.textContent = 'Message: ' + parsedResponse.querySelector('message').textContent;
+        
+      }
+
+      //empty the page area and display the data
+      content.innerHTML = '';
+      content.appendChild(h1);
+      content.appendChild(p);    
+      });
+    };
+
+    //send fetch request
+    const sendFetchRequest = (url, acceptedType) => {
+
+      const options = {
+        method: 'GET',
+        headers: {'Accept': acceptedType},
+      }
+
+      const fetchPromise = fetch(url, options);
+      fetchPromise.then((response) => { handleResponse(response) });
+    };
+  
+  window.onload = init;
+
   </script>
 </head>
 <body>
